@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import pandas as pd
 from tinkoff.invest import MoneyValue, InstrumentStatus, OrderDirection, OrderType, CandleInterval
 
@@ -83,14 +84,15 @@ class Sandbox:
             order_id='1'
         )
 
-    def get_candles(self, share, year):
+    def get_candles(self, share, days=365):
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=days)
         ticker = self.shares_name[share]
         figi = self.get_figi(ticker)
-        time_start, time_end = pd.Timestamp(year=year, month=1, day=1), pd.Timestamp(year=year + 1, month=1, day=1)
         candles = self.client.market_data.get_candles(
             figi=figi,
-            from_=time_start,
-            to=time_end,
+            from_=start_date,
+            to=end_date,
             interval=CandleInterval.CANDLE_INTERVAL_DAY
         ).candles
         return candles
